@@ -1,31 +1,29 @@
 # Źródła audio — Muzykogram
 
-Każda plansza ma **bundlowaną oryginalną ścieżkę dźwiękową** w `/public/audio/*.ogg`.
-Nie używamy podkładu Web Audio ani syntetycznych replik utworów klasycznych.
+Bundlowane nagrania klasyczne (domena publiczna / wolne nagrania z Wikimedia Commons).
+Przycięte do ~90 s z fade, format OGG.
 
-| Temat | Plik | Utwór (CC BY) | Autor |
+| Temat | Plik | Utwór | Źródło (Commons) |
 | --- | --- | --- | --- |
-| Wiosna i ptaki | `wiosna-ptaki.ogg` | Early Riser | Kevin MacLeod |
-| Fala na rzece | `fala-rzeka.ogg` | Floating Cities | Kevin MacLeod |
-| Warsztat kół | `warsztat-kol.ogg` | Easy Lemon | Kevin MacLeod |
-| Mosty i łuki | `mosty-luki.ogg` | Dreamy Flashback | Kevin MacLeod |
-| Nocny spacer | `nocny-spacer.ogg` | Ice Flow | Kevin MacLeod |
-| Parada bębenków | `parada-bebenkow.ogg` | Jaunty Gumption | Kevin MacLeod |
-| Niespodzianka! | `niespodzianka.ogg` | Sneaky Snitch | Kevin MacLeod |
-| Słoneczna radość | `oda-radosci.ogg` | Carefree | Kevin MacLeod |
-| Łąka i wiatr | `laka-wiatr.ogg` | Folk Round | Kevin MacLeod |
-| Galop! | `galop.ogg` | Le Grand Chase | Kevin MacLeod |
-| Cyrk Can-Can | `cyrk-cancan.ogg` | Monkeys Spinning Monkeys | Kevin MacLeod |
-| Walc wstążek | `walc-dunaju.ogg` | Galway | Kevin MacLeod |
-| Taniec przy ognisku | `taniec-ogniska.ogg` | Scheming Weasel | Kevin MacLeod |
-| Akwarium | `akwarium.ogg` | Wallpaper | Kevin MacLeod |
-| Parada w zoo | `zoo-parada.ogg` | Happy Alley | Kevin MacLeod |
-| Poranek w ogrodzie | `poranek-ogrod.ogg` | Wholesome | Kevin MacLeod |
-| Pszczeli wir | `pszczeli-wir.ogg` | Pinball Spring | Kevin MacLeod |
-| Balet śniegu | `balet-sniegu.ogg` | Spy Glass | Kevin MacLeod |
-| Taniec kwiatów | `taniec-kwiatow.ogg` | Local Forecast | Kevin MacLeod |
-| Wesoły gospodarz | `wesoly-gospodarz.ogg` | Merry Go | Kevin MacLeod |
+| Wiosna i ptaki | `wiosna-ptaki.ogg` | Vivaldi — Wiosna Allegro | John Harrison violin |
+| Fala na rzece | `fala-rzeka.ogg` | Händel — Water Music Hornpipe | Commons WAV |
+| Warsztat kół | `warsztat-kol.ogg` | Bach — Brandenburg 3 Allegro | Commons |
+| Mosty i łuki | `mosty-luki.ogg` | Pachelbel — Canon | Commons |
+| Nocny spacer | `nocny-spacer.ogg` | Mozart — Eine kleine Nachtmusik | Commons |
+| Parada bębenków | `parada-bebenkow.ogg` | Mozart — Alla Turca | Commons |
+| Niespodzianka! | `niespodzianka.ogg` | Haydn — Surprise | Commons |
+| Oda do radości | `oda-radosci.ogg` | Beethoven — Ode to Joy | Commons |
+| Łąka i wiatr | `laka-wiatr.ogg` | Beethoven — Pastoralna | Commons |
+| Galop! | `galop.ogg` | Rossini — William Tell | Commons |
+| Cyrk Can-Can | `cyrk-cancan.ogg` | Offenbach — Galop infernal | Commons |
+| Walc Dunaju | `walc-dunaju.ogg` | Strauss — Błękitny Dunaj | US Marine Band |
+| Taniec przy ognisku | `taniec-ogniska.ogg` | Brahms — Hungarian Dance 5 | Commons |
+| Akwarium | `akwarium.ogg` | Saint-Saëns — Aquarium | Commons |
+| Parada w zoo | `zoo-parada.ogg` | Saint-Saëns — Karnawał | Commons |
+| Poranek w ogrodzie | `poranek-ogrod.ogg` | Grieg — Morning Mood | Musopen / Commons |
+| Pszczeli wir | `pszczeli-wir.ogg` | Rimski-Korsakow — Lot trzmiela | USAF Band |
+| Balet śniegu | `balet-sniegu.ogg` | Czajkowski — Trepek | Commons |
+| Taniec kwiatów | `taniec-kwiatow.ogg` | Czajkowski — Waltz of the Flowers | US Army Band |
+| Wesoły gospodarz | `wesoly-gospodarz.ogg` | Bach — Menuet G-dur Anh. 114 | Commons |
 
-**Licencja:** [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) — Kevin MacLeod ([incompetech.com](https://incompetech.com)).
-
-Pliki przycięte do ~90 s z fade in/out na potrzeby pętli planszy.
+Szczegóły licencji poszczególnych plików: strona pliku na Wikimedia Commons.

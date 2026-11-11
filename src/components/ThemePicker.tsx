@@ -92,9 +92,13 @@ export function ThemePicker({ themes, onSelect }: Props) {
                         #{theme.playlistIndex} · {theme.ageLabel}
                       </span>
                       <span className="tile-title">{theme.title}</span>
-                      <span className="tile-meta">{theme.subtitle}</span>
+                      <span className="tile-meta">
+                        {theme.composer}
+                        <br />
+                        {theme.piece}
+                      </span>
                       <span className="tile-stats">
-                        {theme.pathCount} szlaczków · przepływ wolny
+                        {theme.pathCount} dużych szlaczków · kolejno pod sobą
                       </span>
                       <span className="tile-cta">Otwórz tablicę</span>
                     </button>

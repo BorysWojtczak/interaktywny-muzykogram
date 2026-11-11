@@ -1,6 +1,4 @@
-# Audio — oryginalne ścieżki Muzykogram
+# Audio — muzyka klasyczna
 
-Każdy plik `*.ogg` to bundlowana ścieżka dźwiękowa planszy (nie syntezator w przeglądarce,
-nie replika utworu klasycznego).
-
-Źródła i atrybucja CC BY: `docs/audio-sources.md`.
+Pliki `*.ogg` to bundlowane nagrania klasyczne (Vivaldi, Mozart, Bach, …)
+z Wikimedia Commons / wolnych źródeł. Szczegóły: `docs/audio-sources.md`.

@@ -13,26 +13,23 @@ function mulberry32(seed: number) {
 
 const W = 1200
 const H = 800
-const MARGIN = 48
+const MARGIN_X = 56
+const MARGIN_Y = 36
 
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n))
 }
 
-function wavePath(
-  y: number,
-  amp: number,
-  freq: number,
-  phase: number,
-  steps = 18,
-): string {
+/** One large horizontal wave / ribbon occupying a vertical band. */
+function stackedWave(y: number, amp: number, freq: number, phase: number): string {
+  const steps = 20
   const pts: string[] = []
   for (let i = 0; i <= steps; i++) {
-    const x = MARGIN + (i / steps) * (W - MARGIN * 2)
+    const x = MARGIN_X + (i / steps) * (W - MARGIN_X * 2)
     const yy = y + Math.sin((i / steps) * Math.PI * 2 * freq + phase) * amp
     if (i === 0) pts.push(`M ${x.toFixed(1)} ${yy.toFixed(1)}`)
     else {
-      const px = MARGIN + ((i - 1) / steps) * (W - MARGIN * 2)
+      const px = MARGIN_X + ((i - 1) / steps) * (W - MARGIN_X * 2)
       const mid = (px + x) / 2
       pts.push(`Q ${mid.toFixed(1)} ${yy.toFixed(1)} ${x.toFixed(1)} ${yy.toFixed(1)}`)
     }
@@ -40,22 +37,22 @@ function wavePath(
   return pts.join(' ')
 }
 
-function zigzagPath(y: number, amp: number, teeth: number): string {
+function stackedZigzag(y: number, amp: number, teeth: number): string {
   const pts: string[] = []
   const n = teeth * 2
   for (let i = 0; i <= n; i++) {
-    const x = MARGIN + (i / n) * (W - MARGIN * 2)
+    const x = MARGIN_X + (i / n) * (W - MARGIN_X * 2)
     const yy = y + (i % 2 === 0 ? -amp : amp)
     pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${yy.toFixed(1)}`)
   }
   return pts.join(' ')
 }
 
-function arcRowPath(y: number, arches: number, height: number): string {
-  const span = (W - MARGIN * 2) / arches
-  let d = `M ${MARGIN} ${y}`
+function stackedArcs(y: number, arches: number, height: number): string {
+  const span = (W - MARGIN_X * 2) / arches
+  let d = `M ${MARGIN_X} ${y}`
   for (let i = 0; i < arches; i++) {
-    const x0 = MARGIN + i * span
+    const x0 = MARGIN_X + i * span
     const x1 = x0 + span
     const cx = (x0 + x1) / 2
     d += ` Q ${cx.toFixed(1)} ${(y - height).toFixed(1)} ${x1.toFixed(1)} ${y.toFixed(1)}`
@@ -63,114 +60,42 @@ function arcRowPath(y: number, arches: number, height: number): string {
   return d
 }
 
-function loopsPath(y: number, loops: number, r: number): string {
-  const span = (W - MARGIN * 2) / loops
+function stackedLoops(y: number, loops: number, r: number): string {
+  const span = (W - MARGIN_X * 2) / loops
   let d = ''
   for (let i = 0; i < loops; i++) {
-    const cx = MARGIN + span * (i + 0.5)
+    const cx = MARGIN_X + span * (i + 0.5)
     const x0 = cx - r
     const x1 = cx + r
     const cmd = i === 0 ? 'M' : 'L'
-    d += `${cmd} ${x0.toFixed(1)} ${y.toFixed(1)} C ${x0.toFixed(1)} ${(y - r * 1.4).toFixed(1)}, ${x1.toFixed(1)} ${(y - r * 1.4).toFixed(1)}, ${x1.toFixed(1)} ${y.toFixed(1)} C ${x1.toFixed(1)} ${(y + r * 1.2).toFixed(1)}, ${x0.toFixed(1)} ${(y + r * 1.2).toFixed(1)}, ${x0.toFixed(1)} ${y.toFixed(1)} `
+    d += `${cmd} ${x0.toFixed(1)} ${y.toFixed(1)} C ${x0.toFixed(1)} ${(y - r * 1.35).toFixed(1)}, ${x1.toFixed(1)} ${(y - r * 1.35).toFixed(1)}, ${x1.toFixed(1)} ${y.toFixed(1)} C ${x1.toFixed(1)} ${(y + r * 1.15).toFixed(1)}, ${x0.toFixed(1)} ${(y + r * 1.15).toFixed(1)}, ${x0.toFixed(1)} ${y.toFixed(1)} `
   }
   return d.trim()
 }
 
-function spiralPath(cx: number, cy: number, turns: number, maxR: number): string {
-  const steps = Math.floor(turns * 28)
-  const pts: string[] = []
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps
-    const ang = t * turns * Math.PI * 2
-    const r = 12 + t * maxR
-    const x = cx + Math.cos(ang) * r
-    const y = cy + Math.sin(ang) * r
-    pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
-  }
-  return pts.join(' ')
-}
-
-function diagonalRibbon(y0: number, y1: number, wobble: number, steps = 14): string {
-  const pts: string[] = []
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps
-    const x = MARGIN + t * (W - MARGIN * 2)
-    const y = y0 + (y1 - y0) * t + Math.sin(t * Math.PI * 3) * wobble
-    pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
-  }
-  return pts.join(' ')
-}
-
-function petalPath(cx: number, cy: number, r: number, petals: number): string {
-  const pts: string[] = []
-  const steps = petals * 12
-  for (let i = 0; i <= steps; i++) {
-    const a = (i / steps) * Math.PI * 2
-    const rr = r * (0.55 + 0.45 * Math.abs(Math.sin(a * (petals / 2))))
-    const x = cx + Math.cos(a) * rr
-    const y = cy + Math.sin(a) * rr
-    pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
-  }
-  return pts.join(' ') + ' Z'
-}
-
-function figureEight(cx: number, cy: number, rx: number, ry: number): string {
-  return [
-    `M ${cx} ${cy}`,
-    `C ${cx + rx} ${cy - ry}, ${cx + rx} ${cy + ry}, ${cx} ${cy}`,
-    `C ${cx - rx} ${cy - ry}, ${cx - rx} ${cy + ry}, ${cx} ${cy}`,
-  ].join(' ')
-}
-
-function meanderVertical(x: number, amp: number, waves: number): string {
-  const pts: string[] = []
-  const steps = 20
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps
-    const y = MARGIN + t * (H - MARGIN * 2)
-    const xx = x + Math.sin(t * Math.PI * 2 * waves) * amp
-    pts.push(`${i === 0 ? 'M' : 'L'} ${xx.toFixed(1)} ${y.toFixed(1)}`)
-  }
-  return pts.join(' ')
-}
-
-function gearRing(cx: number, cy: number, r: number, teeth: number): string {
-  const pts: string[] = []
-  const steps = teeth * 4
-  for (let i = 0; i <= steps; i++) {
-    const a = (i / steps) * Math.PI * 2
-    const tooth = i % 4 < 2 ? 1.12 : 0.88
-    const rr = r * tooth
-    const x = cx + Math.cos(a) * rr
-    const y = cy + Math.sin(a) * rr
-    pts.push(`${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`)
-  }
-  return pts.join(' ') + ' Z'
-}
-
-function pickFamily(bias: PatternBias, rnd: () => number): number {
-  // Weighted family picker by theme bias (0..7 families)
+function biasFamily(bias: PatternBias, rnd: () => number): number {
+  // 0 wave, 1 arcs, 2 zigzag, 3 loops — only large horizontal families (stacked rows)
   const weights: Record<PatternBias, number[]> = {
-    waves: [5, 1, 2, 1, 1, 1, 1, 1],
-    arcs: [1, 5, 1, 1, 1, 1, 1, 1],
-    gears: [1, 1, 1, 1, 1, 1, 1, 5],
-    bridges: [1, 5, 1, 2, 1, 1, 1, 1],
-    stars: [1, 1, 2, 1, 3, 2, 1, 1],
-    zigzag: [1, 1, 5, 1, 1, 1, 1, 1],
-    dots: [1, 3, 1, 3, 1, 1, 1, 1],
-    sun: [2, 3, 1, 1, 3, 1, 1, 1],
-    meadow: [4, 2, 1, 2, 1, 1, 1, 1],
-    gallop: [2, 1, 4, 1, 1, 2, 1, 1],
-    stripes: [1, 1, 4, 1, 1, 3, 1, 1],
-    ribbons: [3, 1, 1, 1, 1, 4, 1, 1],
-    fire: [2, 1, 3, 2, 1, 2, 1, 1],
-    bubbles: [3, 1, 1, 4, 1, 1, 1, 1],
-    parade: [1, 2, 3, 2, 1, 1, 1, 1],
-    dawn: [4, 3, 1, 1, 1, 1, 1, 1],
-    buzz: [1, 1, 4, 2, 2, 1, 1, 1],
-    snow: [2, 3, 1, 2, 1, 1, 2, 1],
-    petals: [1, 1, 1, 2, 4, 1, 1, 1],
-    farm: [2, 3, 2, 1, 1, 1, 1, 1],
+    waves: [5, 1, 1, 1],
+    arcs: [1, 5, 1, 1],
+    gears: [2, 2, 1, 3],
+    bridges: [1, 5, 1, 1],
+    stars: [2, 2, 1, 3],
+    zigzag: [1, 1, 5, 1],
+    dots: [1, 2, 1, 4],
+    sun: [2, 4, 1, 1],
+    meadow: [4, 2, 1, 1],
+    gallop: [2, 1, 4, 1],
+    stripes: [1, 1, 4, 2],
+    ribbons: [4, 1, 1, 2],
+    fire: [2, 1, 3, 2],
+    bubbles: [1, 1, 1, 5],
+    parade: [1, 2, 3, 2],
+    dawn: [3, 4, 1, 1],
+    buzz: [1, 1, 5, 1],
+    snow: [2, 3, 1, 2],
+    petals: [2, 2, 1, 3],
+    farm: [2, 3, 2, 1],
   }
   const w = weights[bias]
   const sum = w.reduce((a, b) => a + b, 0)
@@ -182,155 +107,108 @@ function pickFamily(bias: PatternBias, rnd: () => number): number {
   return 0
 }
 
-function makePathD(
+function makeStackedPath(
   family: number,
   rnd: () => number,
-  index: number,
-  total: number,
+  bandY: number,
+  bandHalf: number,
 ): { d: string; strokeWidth: number } {
-  const band = MARGIN + 40 + ((index + 0.5) / total) * (H - MARGIN * 2 - 80)
-  const amp = 18 + rnd() * 42
-  const strokeWidth = 10 + rnd() * 12
+  const amp = clamp(bandHalf * (0.45 + rnd() * 0.35), 28, 78)
+  const strokeWidth = clamp(bandHalf * 0.55 + rnd() * 8, 28, 56)
 
   switch (family) {
-    case 0: // waves
+    case 1:
       return {
-        d: wavePath(band, amp, 1.2 + rnd() * 2.2, rnd() * Math.PI * 2),
+        d: stackedArcs(bandY, 3 + Math.floor(rnd() * 3), amp * 1.15),
         strokeWidth,
       }
-    case 1: // arcs
+    case 2:
       return {
-        d: arcRowPath(band, 4 + Math.floor(rnd() * 6), 28 + rnd() * 50),
+        d: stackedZigzag(bandY, amp * 0.85, 4 + Math.floor(rnd() * 4)),
+        strokeWidth: strokeWidth * 0.92,
+      }
+    case 3:
+      return {
+        d: stackedLoops(bandY, 3 + Math.floor(rnd() * 3), clamp(amp * 0.7, 24, 52)),
         strokeWidth,
       }
-    case 2: // zigzag
+    default:
       return {
-        d: zigzagPath(band, 16 + rnd() * 36, 5 + Math.floor(rnd() * 8)),
-        strokeWidth: strokeWidth * 0.9,
-      }
-    case 3: // loops / bubbles
-      return {
-        d: loopsPath(band, 3 + Math.floor(rnd() * 5), 22 + rnd() * 28),
-        strokeWidth,
-      }
-    case 4: // petals / stars / spirals
-      if (rnd() > 0.45) {
-        return {
-          d: spiralPath(
-            200 + rnd() * 800,
-            160 + rnd() * 480,
-            2.2 + rnd() * 2.5,
-            40 + rnd() * 90,
-          ),
-          strokeWidth: strokeWidth * 0.85,
-        }
-      }
-      return {
-        d: petalPath(
-          220 + rnd() * 760,
-          180 + rnd() * 440,
-          50 + rnd() * 70,
-          5 + Math.floor(rnd() * 4),
-        ),
-        strokeWidth: strokeWidth * 0.75,
-      }
-    case 5: // ribbons / diagonals
-      return {
-        d: diagonalRibbon(
-          MARGIN + 60 + rnd() * 200,
-          H - MARGIN - 60 - rnd() * 200,
-          20 + rnd() * 50,
-        ),
-        strokeWidth,
-      }
-    case 6: // figure eight / snow swirls
-      return {
-        d: figureEight(
-          250 + rnd() * 700,
-          180 + rnd() * 440,
-          60 + rnd() * 90,
-          40 + rnd() * 70,
-        ),
-        strokeWidth,
-      }
-    default: // gears / vertical meanders
-      if (rnd() > 0.5) {
-        return {
-          d: gearRing(
-            280 + rnd() * 640,
-            200 + rnd() * 400,
-            45 + rnd() * 70,
-            8 + Math.floor(rnd() * 8),
-          ),
-          strokeWidth: strokeWidth * 0.7,
-        }
-      }
-      return {
-        d: meanderVertical(
-          MARGIN + 80 + rnd() * (W - MARGIN * 2 - 160),
-          30 + rnd() * 50,
-          1.5 + rnd() * 2,
-        ),
+        d: stackedWave(bandY, amp, 1.0 + rnd() * 1.4, rnd() * Math.PI * 2),
         strokeWidth,
       }
   }
 }
 
 /**
- * Age-aware pacing: color flow stays slow enough for a child with a stick
- * to mirror the movement. Older groups get more paths and slightly higher
- * dynamism — never arcade-fast.
+ * Age pacing — fill is slow; paths are STRICTLY sequential
+ * (next starts only after previous finishes).
  */
-const agePace: Record<
-  Theme['ageGroup'],
-  { fill: number; stagger: number; strokeBoost: number }
-> = {
-  '3-4': { fill: 18, stagger: 14, strokeBoost: 1.35 }, // max 3 paths, nearly sequential
-  '4-5': { fill: 13, stagger: 8, strokeBoost: 1.15 },
-  '5-6': { fill: 10, stagger: 5.5, strokeBoost: 1.0 },
+const agePace: Record<Theme['ageGroup'], { fill: number; gap: number; strokeBoost: number }> = {
+  '3-4': { fill: 16, gap: 1.2, strokeBoost: 1.2 },
+  '4-5': { fill: 13, gap: 0.9, strokeBoost: 1.1 },
+  '5-6': { fill: 11, gap: 0.7, strokeBoost: 1.0 },
 }
 
 export function generatePaths(theme: Theme): PathDef[] {
   const rnd = mulberry32(theme.seed)
   const count = theme.pathCount
-  const { fill, stagger, strokeBoost } = agePace[theme.ageGroup]
+  const { fill, gap, strokeBoost } = agePace[theme.ageGroup]
   const paths: PathDef[] = []
 
+  // Equal vertical bands — one szlaczek under another, large
+  const usable = H - MARGIN_Y * 2
+  const bandH = usable / count
+
+  let cursor = 1.0 // start first path shortly after play begins
+
   for (let i = 0; i < count; i++) {
-    const family = pickFamily(theme.patternBias, rnd)
-    const { d, strokeWidth } = makePathD(family, rnd, i, count)
-    // Slight tempoHint nudge within the age band (±12%)
+    const family = biasFamily(theme.patternBias, rnd)
+    const bandY = MARGIN_Y + bandH * (i + 0.5)
+    const bandHalf = bandH * 0.38
+    const { d, strokeWidth } = makeStackedPath(family, rnd, bandY, bandHalf)
+
     const tempoNudge =
       theme.tempoHint === 'calm'
-        ? 1.08
+        ? 1.1
         : theme.tempoHint === 'medium'
           ? 1
           : theme.tempoHint === 'lively'
-            ? 0.94
-            : 0.88
-    const startAt = 1.2 + i * stagger * (0.9 + rnd() * 0.2)
-    const durationSec = fill * tempoNudge * (0.92 + rnd() * 0.16)
+            ? 0.95
+            : 0.9
+
+    const durationSec = fill * tempoNudge
+    const startAt = cursor
     paths.push({
       id: `${theme.id}-p${i}`,
       d,
       order: i,
-      startAt: clamp(startAt, 0.8, theme.durationSec - 4),
+      startAt,
       durationSec,
       colorIndex: i % theme.palette.length,
-      strokeWidth: clamp(strokeWidth * strokeBoost, 12, 28),
+      strokeWidth: clamp(strokeWidth * strokeBoost, 26, 58),
     })
+    // Next path waits until this one fully finishes
+    cursor = startAt + durationSec + gap
   }
 
-  // Fit path timeline into board duration (loop-friendly)
+  // Stretch board loop so the full sequential sequence fits
   const last = paths[paths.length - 1]
-  if (last && last.startAt + last.durationSec > theme.durationSec - 1) {
-    const overflow = last.startAt + last.durationSec - (theme.durationSec - 1)
-    for (const p of paths) {
-      p.startAt = clamp(
-        p.startAt - overflow * (p.order / Math.max(1, count - 1 || 1)),
-        0.6,
-        theme.durationSec - 4,
-      )
+  if (last) {
+    const needed = last.startAt + last.durationSec + 1.5
+    if (needed > theme.durationSec) {
+      // Keep sequence intact — caller uses theme.durationSec for loop;
+      // bump is reflected by clamping only if absurd; prefer extending via catalog duration.
+      // Soft clamp end into duration by shrinking fill proportionally if needed.
+      const scale = (theme.durationSec - 2) / needed
+      if (scale < 1) {
+        let t = 1.0
+        for (const p of paths) {
+          p.durationSec = Math.max(6, p.durationSec * scale)
+          p.startAt = t
+          t = p.startAt + p.durationSec + gap * scale
+        }
+      }
     }
   }
 

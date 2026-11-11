@@ -23,8 +23,8 @@ export type Theme = {
   title: string
   subtitle: string
   mood: string
-  /** Visual / mood inspiration label — not the audio source */
-  inspiration: string
+  composer: string
+  piece: string
   playlistIndex: number
   ageGroup: AgeGroup
   ageLabel: string
@@ -36,7 +36,7 @@ export type Theme = {
   tempoHint: 'calm' | 'medium' | 'lively' | 'fast'
   palette: string[]
   atmosphere: ThemeAtmosphere
-  /** Bundled original soundtrack under /public/audio */
+  /** Bundled classical recording under /public/audio */
   audioSrc: string
   audioNote: string
   patternBias: PatternBias

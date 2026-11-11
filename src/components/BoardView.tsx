@@ -76,7 +76,9 @@ export function BoardView({ theme, paths, onBack }: Props) {
           <h1>{theme.title}</h1>
         </div>
         <p className="board-track">
-          {theme.ageLabel} · {theme.pathCount} szlaczków · oryginalna ścieżka
+          {theme.composer} — {theme.piece}
+          <br />
+          {theme.ageLabel} · {theme.pathCount} szlaczków · kolejno jeden po drugim
         </p>
       </header>
 
@@ -111,11 +113,11 @@ export function BoardView({ theme, paths, onBack }: Props) {
 
         <div className="board-meta-row">
           <p className="hint">
-            Pałeczka tylko naśladuje — kolor płynie wolno (
-            {filled}/{paths.length} szlaczków · {theme.ageLabel}).
+            Pałeczka tylko naśladuje — kolejny szlaczek startuje dopiero po
+            domknięciu poprzedniego ({filled}/{paths.length} · {theme.ageLabel}).
           </p>
           <p className="audio-note" title={theme.audioNote}>
-            Oryginalna ścieżka dźwiękowa
+            Muzyka klasyczna
           </p>
         </div>
 
