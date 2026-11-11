@@ -70,8 +70,18 @@ Same **kompozycje** klasyczne są zazwyczaj w domenie publicznej. **Nagrania** m
 
 ## Publiczna wersja
 
-- **GitHub Pages:** https://boryswojtczak.github.io/interaktywny-muzykogram/
+- **Docelowy URL:** https://boryswojtczak.github.io/interaktywny-muzykogram/
 - Repo: https://github.com/BorysWojtczak/interaktywny-muzykogram
+
+### Jednorazowe włączenie GitHub Pages (właściciel repo)
+
+Build jest gotowy na branchu `gh-pages` (oraz workflow Actions na `main`). Token agenta nie może włączyć Pages — zrób to raz w UI:
+
+1. Otwórz [Settings → Pages](https://github.com/BorysWojtczak/interaktywny-muzykogram/settings/pages)
+2. **Source:** *Deploy from a branch*
+3. **Branch:** `gh-pages` / `/ (root)` → Save
+
+Albo Source: *GitHub Actions*, potem re-run workflow *Deploy GitHub Pages*.
 
 ## Uruchomienie lokalne
 
