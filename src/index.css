@@ -7,6 +7,12 @@
   --coral: #f07a5a;
   --ink: #1f2a24;
   --paper: #fff8ec;
+  /* Złoty Kogucik brand */
+  --logo-yellow: #ebb82d;
+  --logo-orange: #e07a28;
+  --logo-red: #d62828;
+  --logo-green: #6bbf3a;
+  --logo-blue: #8ec8e8;
   --font-brand: 'Fredoka', system-ui, sans-serif;
   --font-ui: 'Nunito', system-ui, sans-serif;
   color: var(--ink);

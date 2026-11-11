@@ -192,25 +192,7 @@ export function generatePaths(theme: Theme): PathDef[] {
     cursor = startAt + durationSec + gap
   }
 
-  // Stretch board loop so the full sequential sequence fits
-  const last = paths[paths.length - 1]
-  if (last) {
-    const needed = last.startAt + last.durationSec + 1.5
-    if (needed > theme.durationSec) {
-      // Keep sequence intact — caller uses theme.durationSec for loop;
-      // bump is reflected by clamping only if absurd; prefer extending via catalog duration.
-      // Soft clamp end into duration by shrinking fill proportionally if needed.
-      const scale = (theme.durationSec - 2) / needed
-      if (scale < 1) {
-        let t = 1.0
-        for (const p of paths) {
-          p.durationSec = Math.max(6, p.durationSec * scale)
-          p.startAt = t
-          t = p.startAt + p.durationSec + gap * scale
-        }
-      }
-    }
-  }
-
+  // Do not shrink path timing to audio file length — audio loops until
+  // the last szlaczek finishes (see BoardView / usePlaybackClock).
   return paths
 }

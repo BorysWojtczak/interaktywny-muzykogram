@@ -42,11 +42,18 @@ export function ThemePicker({ themes, onSelect }: Props) {
         </div>
 
         <div className="hero-copy">
+          <img
+            className="hero-logo"
+            src={`${import.meta.env.BASE_URL}brand/zloty-kogucik.webp`}
+            alt="Przedszkole Publiczne Złoty Kogucik"
+            width={120}
+            height={120}
+          />
           <p className="brand">Muzykogram</p>
           <h1>Kolor płynie w rytm muzyki</h1>
           <p className="lede">
             Wybierz planszę dopasowaną do wieku, weź kolorową pałeczkę i śledź
-            szlaczek — fill idzie sam, wolno, z oryginalną ścieżką dźwiękową.
+            szlaczek — fill idzie sam, wolno, przy muzyce klasycznej.
           </p>
           <a className="hero-cta" href="#tematy">
             Wybierz temat
