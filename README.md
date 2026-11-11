@@ -68,9 +68,9 @@ docs/
 
 Same **kompozycje** klasyczne są zazwyczaj w domenie publicznej. **Nagrania** mogą mieć osobne prawa — w aplikacji używamy wyłącznie nagrań z jasną licencją (domena publiczna / Creative Commons / własne nagrania edukacyjne). Szczegóły: `docs/playlist-klasyczna.md`.
 
-## Publiczna wersja
+## Publiczna wersja do testów
 
-- **GitHub Pages:** https://boryswojtczak.github.io/interaktywny-muzykogram/
+- **Live (Cursor):** https://muzykogram.apps.grok.bot
 - Repo: https://github.com/BorysWojtczak/interaktywny-muzykogram
 
 ## Uruchomienie lokalne
