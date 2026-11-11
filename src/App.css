@@ -141,6 +141,21 @@
   max-width: 48ch;
 }
 
+.age-group {
+  margin-top: 1.75rem;
+}
+
+.age-group:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.age-heading {
+  margin: 0 0 0.85rem;
+  font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+  font-weight: 800;
+  color: var(--sun);
+}
+
 .theme-grid {
   list-style: none;
   margin: 0;

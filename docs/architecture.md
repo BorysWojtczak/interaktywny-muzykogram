@@ -1,88 +1,54 @@
 # Architektura — Interaktywny Muzykogram
 
-Skalowanie do **~20 tematów × ~26–30 szlaczków** bez ręcznego rysowania każdej ścieżki.
+20 plansz w **3 grupach wiekowych** z wolnym przepływem koloru i oryginalną ścieżką audio.
 
 ## Warstwy
 
 ```
 UI (React)
-  ├─ ThemePicker — 20 kart z katalogu
+  ├─ ThemePicker — grupy 3–4 / 4–5 / 5–6
   └─ BoardView — aktywna tablica
        ├─ PathBoard (SVG) — stroke-dashoffset fill
-       ├─ PlaybackClock — audio.currentTime lub RAF
-       ├─ syntheticBed (Web Audio) — placeholder gdy brak pliku
-       └─ Pełny ekran / duże CTA (tablica interaktywna)
+       ├─ PlaybackClock — audio.currentTime (HTML5 Audio)
+       └─ Pełny ekran / duże CTA
 Dane
-  catalog.ts          → 20 Theme (meta, paleta, atmosfera, tempo)
-  pathGenerator.ts    → deterministyczne PathDef[] (seed)
+  catalog.ts          → Theme (wiek, pathCount, audioSrc, atmosfera)
+  pathGenerator.ts    → PathDef[] z pacingiem wiekowym
   themes.ts           → cache ścieżek per themeId
+Audio
+  public/audio/*.ogg  → oryginalne ścieżki (CC BY) — bez syntheticBed
 ```
+
+## Grupy wiekowe
+
+| Grupa | Plansze | Szlaczki | Przepływ koloru |
+| --- | --- | --- | --- |
+| 3–4 lata | 1–5 | max **3** | najwolniejszy (~18 s / szlaczek, prawie sekwencyjnie) |
+| 4–5 lat | 6–10 | 5–6 | wolny (~13 s) |
+| 5–6 lat | 11–20 | 7–**10** | wyższa dynamika, nadal wolna (~10 s) |
+
+Cel: dziecko z pałeczką zdąży odzwierciedlić ruch koloru.
 
 ## Model danych
 
 ```ts
 type Theme = {
-  id: string
-  title: string              // PL
-  composer: string
-  piece: string
-  seed: number
-  pathCount: number          // 26–30
-  durationSec: number
-  tempoHint: 'calm' | 'medium' | 'lively' | 'fast'
-  palette: string[]
-  atmosphere: { sky; mid; ground; accent }
-  audioSrc?: string          // /public/audio/...
-  audioNote: string
-  patternBias: PatternBias   // waves | gears | petals | …
-}
-
-type PathDef = {
-  id: string
-  d: string                  // SVG path, viewBox 1200×800
-  startAt: number
-  durationSec: number
-  colorIndex: number
-  strokeWidth: number
+  id, title, subtitle, mood, inspiration
+  ageGroup: '3-4' | '4-5' | '5-6'
+  pathCount: number          // 2–3 / 5–6 / 7–10
+  durationSec: number        // ~90 (pętla ze ścieżką)
+  audioSrc: string           // /audio/<id>.ogg — zawsze obecne
+  tempoHint, palette, atmosphere, patternBias, seed
 }
 ```
 
-Ścieżki generowane **lazy + cache** przy otwarciu tematu — tablet nie liczy 20×30 przy starcie pickera.
-
 ## Timing i sync
 
-1. Źródło prawdy: `audio.currentTime` gdy jest plik; inaczej syntetyczny RAF clock.
-2. Progress pathu: `clamp((t - startAt) / durationSec, 0, 1)` → `stroke-dashoffset`.
-3. Stagger z overlappingiem (wiele szlaczków naraz) — czytelne z daleka na tablicy.
-4. **Illusion only** — brak kamery / trackingu / scoringu.
-5. Opcjonalny Web Audio bed (arpeggia) gdy `audioSrc` puste; przełącznik „Cicho”.
-
-## Audio
-
-| Stan | Zachowanie |
-| --- | --- |
-| Brak pliku (obecnie wszystkie 20) | Zegar syntetyczny + Web Audio placeholder |
-| Plik w `/public/audio/` + `audioSrc` | HTML5 `<audio loop>`; bed wyłączony |
-
-Licencje: kompozycja PD ≠ nagranie. Źródła: `docs/audio-sources.md` w repo / Project store.
+1. Źródło prawdy: `audio.currentTime` z bundlowanego OGG.
+2. Progress pathu: `clamp((t - startAt) / durationSec, 0, 1)`.
+3. **Illusion only** — brak kamery / trackingu / scoringu.
 
 ## UX klasy
 
-- Duże cele (`big-tap`, min ~3.1rem)
-- `touch-action: manipulation`
-- Przycisk **Pełny ekran**
-- Atmosfera tła per temat (CSS variables)
-- Hint: „Pałeczka tylko naśladuje…” + licznik wypełnionych szlaczków
-
-## Stan buildu
-
-- 20 otwartych tematów z playlisty
-- ~568 ścieżek łącznie (avg ~28.4 / temat)
-- Generator rodzin: fale, łuki, zygzaki, pętle, spirale/płatki, wstążki, ósemki, tryby/meandry
-
-## Następne kroki
-
-1. Bundlowane nagrania CC0/CC-BY + cue points  
-2. Ręczna kuracja „hero paths” per temat (nadpisania generatora)  
-3. publish-app / hosting publiczny (bez GitHuba — wg decyzji projektu)  
-4. (Opcjonalnie) gest feedback — tylko na życzenie
+- Duże cele (`big-tap`), pełny ekran, hint o pałeczce
+- Karty pogrupowane według wieku

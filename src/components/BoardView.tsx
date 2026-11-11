@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { startSyntheticBed } from '../audio/syntheticBed'
 import type { PathDef, Theme } from '../data/types'
 import { usePlaybackClock } from '../hooks/usePlaybackClock'
 import { PathBoard } from './PathBoard'
@@ -12,7 +11,6 @@ type Props = {
 
 export function BoardView({ theme, paths, onBack }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
-  const bedRef = useRef<ReturnType<typeof startSyntheticBed> | null>(null)
   const stageRef = useRef<HTMLDivElement | null>(null)
   const [playing, setPlaying] = useState(false)
   const [soundOn, setSoundOn] = useState(true)
@@ -25,28 +23,14 @@ export function BoardView({ theme, paths, onBack }: Props) {
 
   useEffect(() => {
     const audio = audioRef.current
-    if (theme.audioSrc && audio) {
-      if (playing) {
-        void audio.play().catch(() => undefined)
-      } else {
-        audio.pause()
-      }
-      return
-    }
-
-    // Synthetic cheerful bed when no file is bundled
-    if (playing && soundOn) {
-      bedRef.current?.stop()
-      bedRef.current = startSyntheticBed(theme.tempoHint, theme.seed)
+    if (!audio) return
+    audio.muted = !soundOn
+    if (playing) {
+      void audio.play().catch(() => undefined)
     } else {
-      bedRef.current?.stop()
-      bedRef.current = null
+      audio.pause()
     }
-    return () => {
-      bedRef.current?.stop()
-      bedRef.current = null
-    }
-  }, [playing, soundOn, theme])
+  }, [playing, soundOn, theme.audioSrc])
 
   const toggle = () => setPlaying((p) => !p)
   const restart = () => {
@@ -92,7 +76,7 @@ export function BoardView({ theme, paths, onBack }: Props) {
           <h1>{theme.title}</h1>
         </div>
         <p className="board-track">
-          {theme.composer} — {theme.piece}
+          {theme.ageLabel} · {theme.pathCount} szlaczków · oryginalna ścieżka
         </p>
       </header>
 
@@ -127,25 +111,21 @@ export function BoardView({ theme, paths, onBack }: Props) {
 
         <div className="board-meta-row">
           <p className="hint">
-            Pałeczka tylko naśladuje — kolor wypełnia się automatycznie (
-            {filled}/{paths.length} szlaczków).
+            Pałeczka tylko naśladuje — kolor płynie wolno (
+            {filled}/{paths.length} szlaczków · {theme.ageLabel}).
           </p>
           <p className="audio-note" title={theme.audioNote}>
-            {theme.audioSrc ? 'Nagranie bundlowane' : 'Podkład syntetyczny (placeholder)'}
+            Oryginalna ścieżka dźwiękowa
           </p>
         </div>
 
-        {theme.audioSrc ? (
-          <audio
-            ref={audioRef}
-            src={theme.audioSrc}
-            preload="none"
-            loop
-            aria-label="Podkład muzyczny"
-          />
-        ) : (
-          <audio ref={audioRef} preload="none" aria-hidden="true" />
-        )}
+        <audio
+          ref={audioRef}
+          src={theme.audioSrc}
+          preload="auto"
+          loop
+          aria-label="Oryginalna ścieżka dźwiękowa"
+        />
       </footer>
     </div>
   )

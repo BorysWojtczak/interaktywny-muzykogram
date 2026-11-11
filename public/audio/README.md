@@ -1,15 +1,6 @@
-# Audio placeholders
+# Audio — oryginalne ścieżki Muzykogram
 
-Kompozycje klasyczne z playlisty są w domenie publicznej, ale **nagrania** mają osobne prawa.
+Każdy plik `*.ogg` to bundlowana ścieżka dźwiękowa planszy (nie syntezator w przeglądarce,
+nie replika utworu klasycznego).
 
-Obecnie aplikacja używa:
-- **syntetycznego zegara** (`performance.now` / RAF) do fill animacji,
-- **lekkiego Web Audio bed** (proste arpeggia) jako podkładu zastępczego.
-
-Aby dodać prawdziwe nagranie CC0/CC-BY:
-
-1. Umieść plik tutaj, np. `poranek-ogrod.mp3`
-2. Ustaw `audioSrc: '/audio/poranek-ogrod.mp3'` w `src/data/catalog.ts`
-3. Zapisz źródło i licencję w `docs/audio-sources.md` (Project store / repo)
-
-Źródła do rozważenia: Musopen, Internet Archive (PD/CC), własne nagrania edukacyjne.
+Źródła i atrybucja CC BY: `docs/audio-sources.md`.
