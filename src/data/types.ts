@@ -15,23 +15,29 @@ export type ThemeAtmosphere = {
   accent: string
 }
 
+/** Age bands for classroom pacing and path density. */
+export type AgeGroup = '3-4' | '4-5' | '5-6'
+
 export type Theme = {
   id: string
   title: string
   subtitle: string
   mood: string
-  composer: string
-  piece: string
+  /** Visual / mood inspiration label — not the audio source */
+  inspiration: string
   playlistIndex: number
+  ageGroup: AgeGroup
+  ageLabel: string
   /** Deterministic seed for path layout */
   seed: number
+  /** Max 3 (3–4), mid (4–5), up to 10 (5–6) */
   pathCount: number
   durationSec: number
   tempoHint: 'calm' | 'medium' | 'lively' | 'fast'
   palette: string[]
   atmosphere: ThemeAtmosphere
-  /** Optional bundled audio URL under /public/audio */
-  audioSrc?: string
+  /** Bundled original soundtrack under /public/audio */
+  audioSrc: string
   audioNote: string
   patternBias: PatternBias
 }

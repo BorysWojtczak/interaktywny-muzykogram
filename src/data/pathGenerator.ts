@@ -276,42 +276,61 @@ function makePathD(
   }
 }
 
-const tempoScale: Record<Theme['tempoHint'], { fill: number; stagger: number }> = {
-  // Overlapping starts so many szlaczki fill at once (classroom-readable)
-  calm: { fill: 6.5, stagger: 0.55 },
-  medium: { fill: 5.0, stagger: 0.42 },
-  lively: { fill: 3.8, stagger: 0.32 },
-  fast: { fill: 2.6, stagger: 0.22 },
+/**
+ * Age-aware pacing: color flow stays slow enough for a child with a stick
+ * to mirror the movement. Older groups get more paths and slightly higher
+ * dynamism — never arcade-fast.
+ */
+const agePace: Record<
+  Theme['ageGroup'],
+  { fill: number; stagger: number; strokeBoost: number }
+> = {
+  '3-4': { fill: 18, stagger: 14, strokeBoost: 1.35 }, // max 3 paths, nearly sequential
+  '4-5': { fill: 13, stagger: 8, strokeBoost: 1.15 },
+  '5-6': { fill: 10, stagger: 5.5, strokeBoost: 1.0 },
 }
 
 export function generatePaths(theme: Theme): PathDef[] {
   const rnd = mulberry32(theme.seed)
   const count = theme.pathCount
-  const { fill, stagger } = tempoScale[theme.tempoHint]
+  const { fill, stagger, strokeBoost } = agePace[theme.ageGroup]
   const paths: PathDef[] = []
 
   for (let i = 0; i < count; i++) {
     const family = pickFamily(theme.patternBias, rnd)
     const { d, strokeWidth } = makePathD(family, rnd, i, count)
-    const startAt = 0.35 + i * stagger * (0.75 + rnd() * 0.5)
-    const durationSec = fill * (0.75 + rnd() * 0.55)
+    // Slight tempoHint nudge within the age band (±12%)
+    const tempoNudge =
+      theme.tempoHint === 'calm'
+        ? 1.08
+        : theme.tempoHint === 'medium'
+          ? 1
+          : theme.tempoHint === 'lively'
+            ? 0.94
+            : 0.88
+    const startAt = 1.2 + i * stagger * (0.9 + rnd() * 0.2)
+    const durationSec = fill * tempoNudge * (0.92 + rnd() * 0.16)
     paths.push({
       id: `${theme.id}-p${i}`,
       d,
       order: i,
-      startAt: clamp(startAt, 0.2, theme.durationSec - 1.5),
+      startAt: clamp(startAt, 0.8, theme.durationSec - 4),
       durationSec,
       colorIndex: i % theme.palette.length,
-      strokeWidth: clamp(strokeWidth, 8, 22),
+      strokeWidth: clamp(strokeWidth * strokeBoost, 12, 28),
     })
   }
 
-  // Ensure board span roughly fits theme duration (loop-friendly)
+  // Fit path timeline into board duration (loop-friendly)
   const last = paths[paths.length - 1]
-  if (last && last.startAt + last.durationSec > theme.durationSec - 0.5) {
-    const overflow = last.startAt + last.durationSec - (theme.durationSec - 0.5)
+  if (last && last.startAt + last.durationSec > theme.durationSec - 1) {
+    const overflow = last.startAt + last.durationSec - (theme.durationSec - 1)
     for (const p of paths) {
-      p.startAt = clamp(p.startAt - overflow * (p.order / count), 0.15, theme.durationSec - 1)
+      p.startAt = clamp(
+        p.startAt - overflow * (p.order / Math.max(1, count - 1 || 1)),
+        0.6,
+        theme.durationSec - 4,
+      )
     }
   }
 
